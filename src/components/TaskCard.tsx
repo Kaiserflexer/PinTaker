@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
-import RichTextEditor from './RichTextEditor';
+import { useMemo, useRef, useState } from 'react';
 import TimerBar from './TimerBar';
+import TaskEditModal from './TaskEditModal';
 import { CATEGORIES, STATUSES } from '../hooks/useTaskBoard';
-import type { Task, TaskCategory, TaskStatus, TaskTimer, TaskUpdate } from '../types';
+import type { Task, TaskStatus, TaskUpdate } from '../types';
 
 interface TaskCardProps {
   task: Task;
@@ -15,20 +15,8 @@ interface TaskCardProps {
 const statusOrder: TaskStatus[] = STATUSES.map((status) => status.id);
 
 const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(task.title);
-  const [category, setCategory] = useState<TaskCategory>(task.category);
-  const [content, setContent] = useState(task.content);
-  const [durationMinutes, setDurationMinutes] = useState<number>(
-    task.timer?.durationMinutes ?? 30
-  );
-
-  useEffect(() => {
-    setTitle(task.title);
-    setCategory(task.category);
-    setContent(task.content);
-    setDurationMinutes(task.timer?.durationMinutes ?? 30);
-  }, [task]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const cardRef = useRef<HTMLElement | null>(null);
 
   const moveTargets = useMemo(() => {
     const index = statusOrder.indexOf(task.status);
@@ -38,35 +26,18 @@ const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps
     };
   }, [task.status]);
 
-  const handleSave = () => {
-    onUpdate(task.id, {
-      title,
-      category,
-      content,
-      timer: task.timer
-        ? { ...task.timer, durationMinutes }
-        : undefined
-    });
-    setIsEditing(false);
+  const handleDelete = () => {
+    setIsModalOpen(false);
+    onDelete(task.id);
   };
 
-  const handleStartTimer = () => {
-    if (!durationMinutes || durationMinutes <= 0) {
-      return;
-    }
-    const timer: TaskTimer = {
-      durationMinutes,
-      startedAt: Date.now()
-    };
-    onUpdate(task.id, { timer });
-  };
-
-  const handleResetTimer = () => {
-    onUpdate(task.id, { timer: null });
+  const handleArchive = () => {
+    setIsModalOpen(false);
+    onArchive(task.id);
   };
 
   return (
-    <article className={`task-card task-card--${category}`}>
+    <article ref={cardRef} className={`task-card task-card--${task.category}`}>
       <header className="task-card__header">
         <div className="task-card__title">
           <span className="task-card__category">
@@ -85,69 +56,28 @@ const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps
               →
             </button>
           )}
-          <button type="button" onClick={() => setIsEditing((prev) => !prev)}>
-            {isEditing ? 'Закрыть' : 'Редактировать'}
+          <button type="button" onClick={() => setIsModalOpen(true)}>
+            Редактировать
           </button>
-          <button type="button" className="danger" onClick={() => onDelete(task.id)}>
+          <button type="button" className="danger" onClick={handleDelete}>
             Удалить
           </button>
-          <button type="button" onClick={() => onArchive(task.id)}>
+          <button type="button" onClick={handleArchive}>
             Архивировать
           </button>
         </div>
       </header>
       <section className="task-card__content" dangerouslySetInnerHTML={{ __html: task.content }} />
       {task.timer && <TimerBar timer={task.timer} />}
-      {isEditing && (
-        <div className="task-card__editor">
-          <label className="field">
-            <span>Название</span>
-            <input value={title} onChange={(event) => setTitle(event.target.value)} />
-          </label>
-          <label className="field">
-            <span>Категория</span>
-            <select
-              value={category}
-              onChange={(event) => setCategory(event.target.value as TaskCategory)}
-            >
-              {CATEGORIES.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="field">
-            <span>Описание</span>
-            <RichTextEditor value={content} onChange={setContent} ariaLabel="Описание задачи" />
-          </label>
-          <label className="field">
-            <span>Таймер (минут)</span>
-            <input
-              type="number"
-              min={1}
-              value={durationMinutes}
-              onChange={(event) => setDurationMinutes(Number(event.target.value))}
-            />
-          </label>
-          <div className="task-card__editor-actions">
-            <button type="button" onClick={handleSave}>
-              Сохранить
-            </button>
-            <button type="button" onClick={() => setIsEditing(false)}>
-              Отмена
-            </button>
-            <button type="button" onClick={handleStartTimer}>
-              Запустить таймер
-            </button>
-            {task.timer && (
-              <button type="button" onClick={handleResetTimer}>
-                Сбросить таймер
-              </button>
-            )}
-          </div>
-        </div>
-      )}
+      <TaskEditModal
+        task={task}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onUpdate={onUpdate}
+        onMove={onMove}
+        onArchive={handleArchive}
+        container={cardRef.current}
+      />
     </article>
   );
 };
