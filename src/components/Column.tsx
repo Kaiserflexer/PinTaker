@@ -1,27 +1,17 @@
 import TaskCard from './TaskCard';
-import { CATEGORIES, useTaskBoard } from '../hooks/useTaskBoard';
-import type { Task, TaskCategory, TaskStatus } from '../types';
+import { useTaskBoard } from '../hooks/useTaskBoard';
+import type { Task, TaskStatus } from '../types';
 
 interface ColumnProps {
   status: TaskStatus;
   title: string;
   tasks: Task[];
-  draftTitle: string;
-  draftCategory: TaskCategory;
-  onDraftTitleChange: (value: string) => void;
-  onDraftCategoryChange: (value: TaskCategory) => void;
-  onCreateTask: () => void;
 }
 
 const Column = ({
   status,
   title,
-  tasks,
-  draftTitle,
-  draftCategory,
-  onDraftTitleChange,
-  onDraftCategoryChange,
-  onCreateTask
+  tasks
 }: ColumnProps) => {
   const { moveTask, updateTask, deleteTask, archiveTask } = useTaskBoard();
 
@@ -31,27 +21,6 @@ const Column = ({
         <h2>{title}</h2>
         <span className="column-count">{tasks.length}</span>
       </header>
-      <div className="column-create">
-        <input
-          type="text"
-          value={draftTitle}
-          placeholder="Название задачи"
-          onChange={(event) => onDraftTitleChange(event.target.value)}
-        />
-        <select
-          value={draftCategory}
-          onChange={(event) => onDraftCategoryChange(event.target.value as TaskCategory)}
-        >
-          {CATEGORIES.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.label}
-            </option>
-          ))}
-        </select>
-        <button type="button" className="create-button" onClick={onCreateTask}>
-          Добавить
-        </button>
-      </div>
       <div className="column-content">
         {tasks.map((task) => (
           <TaskCard
