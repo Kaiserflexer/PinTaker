@@ -87,6 +87,30 @@ describe('Доска задач PinTaker', () => {
     vi.useRealTimers();
   });
 
+  it('применяет цветовую схему категории в карточке и архиве', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    await createTask(user, 'Отрисовать макет');
+
+    const newColumn = getColumn('Новый');
+    const heading = await within(newColumn).findByRole('heading', { name: 'Отрисовать макет' });
+    const card = heading.closest('article');
+
+    expect(card).not.toBeNull();
+
+    const cardElement = card as HTMLElement;
+    expect(cardElement).toHaveClass('task-card--development');
+
+    await user.click(within(cardElement).getByRole('button', { name: 'Архивировать' }));
+
+    const archivedTitle = await screen.findByText('Отрисовать макет');
+    const archivedItem = archivedTitle.closest('li');
+
+    expect(archivedItem).not.toBeNull();
+    expect(archivedItem as HTMLElement).toHaveClass('archive-item--development');
+  });
+
   afterEach(() => {
     cleanup();
     vi.useRealTimers();

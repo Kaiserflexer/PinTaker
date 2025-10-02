@@ -74,13 +74,21 @@ body {
 }
 
 .task-card {
-  background: #f8fafc;
+  --accent-strong: rgba(148, 163, 184, 0.45);
+  --accent-soft: rgba(148, 163, 184, 0.12);
+  --accent-border: #e2e8f0;
+  --category-badge-bg: rgba(148, 163, 184, 0.18);
+  --category-text-color: #334155;
+  background: linear-gradient(135deg, var(--accent-soft), #f8fafc 65%);
   border-radius: 0.75rem;
   padding: 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--accent-border);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 6px 0 0 var(--accent-strong);
 }
 
 .task-card__header {
@@ -100,7 +108,14 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 700;
-  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--category-badge-bg);
+  color: var(--category-text-color);
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
 
 .task-card__actions {
@@ -130,7 +145,7 @@ body {
   background: #fff;
   border-radius: 0.5rem;
   padding: 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--accent-border, #e2e8f0);
   min-height: 120px;
 }
 
@@ -416,19 +431,30 @@ body {
 }
 
 .archive-item {
+  --accent-strong: rgba(148, 163, 184, 0.45);
+  --accent-soft: rgba(148, 163, 184, 0.12);
+  --accent-border: #e2e8f0;
+  --category-badge-bg: rgba(148, 163, 184, 0.18);
+  --category-text-color: #334155;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, var(--accent-soft), #f8fafc 65%);
+  border: 1px solid var(--accent-border);
   border-radius: 0.75rem;
   padding: 0.5rem 0.75rem;
+  box-shadow: inset 4px 0 0 var(--accent-strong);
+  overflow: hidden;
+}
+
+.archive-item strong {
+  color: #0f172a;
 }
 
 .archive-status {
   display: block;
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--category-text-color, #475569);
 }
 
 .archive-restore {
@@ -445,24 +471,49 @@ body {
   color: #475569;
 }
 
-.archive-item--design {
-  border-left: 4px solid #ec4899;
+.archive-item--design,
+.task-card--design {
+  --accent-strong: #ec4899;
+  --accent-soft: rgba(236, 72, 153, 0.16);
+  --accent-border: rgba(236, 72, 153, 0.35);
+  --category-badge-bg: rgba(236, 72, 153, 0.18);
+  --category-text-color: #9d174d;
 }
 
-.archive-item--development {
-  border-left: 4px solid #6366f1;
+.archive-item--development,
+.task-card--development {
+  --accent-strong: #6366f1;
+  --accent-soft: rgba(99, 102, 241, 0.16);
+  --accent-border: rgba(99, 102, 241, 0.35);
+  --category-badge-bg: rgba(99, 102, 241, 0.18);
+  --category-text-color: #3730a3;
 }
 
-.archive-item--research {
-  border-left: 4px solid #22d3ee;
+.archive-item--research,
+.task-card--research {
+  --accent-strong: #22d3ee;
+  --accent-soft: rgba(34, 211, 238, 0.16);
+  --accent-border: rgba(34, 211, 238, 0.35);
+  --category-badge-bg: rgba(34, 211, 238, 0.18);
+  --category-text-color: #0f766e;
 }
 
-.archive-item--marketing {
-  border-left: 4px solid #f97316;
+.archive-item--marketing,
+.task-card--marketing {
+  --accent-strong: #f97316;
+  --accent-soft: rgba(249, 115, 22, 0.16);
+  --accent-border: rgba(249, 115, 22, 0.35);
+  --category-badge-bg: rgba(249, 115, 22, 0.18);
+  --category-text-color: #9a3412;
 }
 
-.archive-item--support {
-  border-left: 4px solid #22c55e;
+.archive-item--support,
+.task-card--support {
+  --accent-strong: #22c55e;
+  --accent-soft: rgba(34, 197, 94, 0.16);
+  --accent-border: rgba(34, 197, 94, 0.35);
+  --category-badge-bg: rgba(34, 197, 94, 0.18);
+  --category-text-color: #166534;
 }
 
 .board-create-fab {
@@ -563,25 +614,6 @@ body {
   background: #4f46e5;
 }
 
-.task-card--design {
-  border-color: rgba(236, 72, 153, 0.35);
-}
-
-.task-card--development {
-  border-color: rgba(99, 102, 241, 0.35);
-}
-
-.task-card--research {
-  border-color: rgba(34, 211, 238, 0.35);
-}
-
-.task-card--marketing {
-  border-color: rgba(249, 115, 22, 0.35);
-}
-
-.task-card--support {
-  border-color: rgba(34, 197, 94, 0.35);
-}
 
 @media (max-width: 960px) {
   .board {
