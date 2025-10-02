@@ -1,9 +1,10 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TaskCard from '../components/TaskCard';
 import { TASK_PLACEHOLDER_CONTENT } from '../constants/taskContent';
 import type { Task } from '../types';
+import { TaskBoardProvider } from '../hooks/useTaskBoard';
 
 vi.mock('../components/TaskEditModal', () => ({
   default: ({ isOpen }: { isOpen: boolean }) =>
@@ -27,6 +28,10 @@ const baseTask: Task = {
   archived: false
 };
 
+beforeEach(() => {
+  window.localStorage.clear();
+});
+
 afterEach(() => {
   cleanup();
 });
@@ -36,13 +41,15 @@ describe('TaskCard placeholder behaviour', () => {
     const user = userEvent.setup();
 
     render(
-      <TaskCard
-        task={baseTask}
-        onMove={vi.fn()}
-        onUpdate={vi.fn()}
-        onDelete={vi.fn()}
-        onArchive={vi.fn()}
-      />
+      <TaskBoardProvider>
+        <TaskCard
+          task={baseTask}
+          onMove={vi.fn()}
+          onUpdate={vi.fn()}
+          onDelete={vi.fn()}
+          onArchive={vi.fn()}
+        />
+      </TaskBoardProvider>
     );
 
     const placeholder = screen.getByRole('button', { name: 'Добавить описание задачи' });
@@ -55,13 +62,15 @@ describe('TaskCard placeholder behaviour', () => {
     const user = userEvent.setup();
 
     render(
-      <TaskCard
-        task={{ ...baseTask, content: '<p>Описание заполнено</p>' }}
-        onMove={vi.fn()}
-        onUpdate={vi.fn()}
-        onDelete={vi.fn()}
-        onArchive={vi.fn()}
-      />
+      <TaskBoardProvider>
+        <TaskCard
+          task={{ ...baseTask, content: '<p>Описание заполнено</p>' }}
+          onMove={vi.fn()}
+          onUpdate={vi.fn()}
+          onDelete={vi.fn()}
+          onArchive={vi.fn()}
+        />
+      </TaskBoardProvider>
     );
 
     const content = screen.getByText('Описание заполнено');
