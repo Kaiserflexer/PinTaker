@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { CATEGORIES } from '../hooks/useTaskBoard';
+import { TASK_PLACEHOLDER_CONTENT } from '../constants/taskContent';
 import type { TaskCategory } from '../types';
 
 interface TaskModalProps {
@@ -8,18 +9,16 @@ interface TaskModalProps {
   onCreate: (input: { title: string; category: TaskCategory; content: string }) => void;
 }
 
-const DEFAULT_CONTENT = '<p>Нажмите, чтобы отредактировать описание задачи.</p>';
-
 const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<TaskCategory>('development');
-  const [content, setContent] = useState(DEFAULT_CONTENT);
+  const [content, setContent] = useState(TASK_PLACEHOLDER_CONTENT);
 
   useEffect(() => {
     if (isOpen) {
       setTitle('');
       setCategory('development');
-      setContent(DEFAULT_CONTENT);
+      setContent(TASK_PLACEHOLDER_CONTENT);
     }
   }, [isOpen]);
 
@@ -31,7 +30,7 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
       return;
     }
 
-    const normalizedContent = content.trim() ? content : DEFAULT_CONTENT;
+    const normalizedContent = content.trim() ? content : TASK_PLACEHOLDER_CONTENT;
 
     onCreate({
       title: trimmedTitle,

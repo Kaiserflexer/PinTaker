@@ -132,6 +132,18 @@ body {
   padding: 0.75rem;
   border: 1px solid #e2e8f0;
   min-height: 120px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.task-card__content--placeholder {
+  cursor: pointer;
+}
+
+.task-card__content--placeholder:hover,
+.task-card__content--placeholder:focus-visible {
+  border-style: dashed;
+  border-color: #94a3b8;
+  box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.25);
 }
 
 .task-card__editor {
