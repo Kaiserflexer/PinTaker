@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import TimerBar from './TimerBar';
 import TaskEditModal from './TaskEditModal';
-import { CATEGORIES, STATUSES } from '../hooks/useTaskBoard';
+import { STATUSES, useTaskBoard } from '../hooks/useTaskBoard';
 import type { Task, TaskStatus, TaskUpdate } from '../types';
 
 interface TaskCardProps {
@@ -15,6 +15,7 @@ interface TaskCardProps {
 const statusOrder: TaskStatus[] = STATUSES.map((status) => status.id);
 
 const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps) => {
+  const { categories } = useTaskBoard();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const cardRef = useRef<HTMLElement | null>(null);
 
@@ -36,12 +37,16 @@ const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps
     onArchive(task.id);
   };
 
+  const categoryLabel = useMemo(() => {
+    return categories.find((item) => item.id === task.category)?.label ?? task.category;
+  }, [categories, task.category]);
+
   return (
     <article ref={cardRef} className={`task-card task-card--${task.category}`}>
       <header className="task-card__header">
         <div className="task-card__title">
           <span className="task-card__category">
-            {CATEGORIES.find((item) => item.id === task.category)?.label ?? task.category}
+            {categoryLabel}
           </span>
           <h3>{task.title}</h3>
         </div>
