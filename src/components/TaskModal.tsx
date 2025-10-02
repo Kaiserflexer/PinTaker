@@ -1,6 +1,10 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { CATEGORIES } from '../hooks/useTaskBoard';
 import { TASK_PLACEHOLDER_CONTENT } from '../constants/taskContent';
+
+import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { useTaskBoard } from '../hooks/useTaskBoard';
+
 import type { TaskCategory } from '../types';
 
 interface TaskModalProps {
@@ -10,17 +14,38 @@ interface TaskModalProps {
 }
 
 const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
+  const { categories } = useTaskBoard();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<TaskCategory>('development');
   const [content, setContent] = useState(TASK_PLACEHOLDER_CONTENT);
+  const [category, setCategory] = useState<TaskCategory>('');
+  const [content, setContent] = useState(DEFAULT_CONTENT);
+
+
+  const fallbackCategory = useMemo(() => categories[0]?.id ?? '', [categories]);
 
   useEffect(() => {
     if (isOpen) {
       setTitle('');
+
       setCategory('development');
       setContent(TASK_PLACEHOLDER_CONTENT);
+
+      setCategory(fallbackCategory);
+      setContent(DEFAULT_CONTENT);
+
     }
-  }, [isOpen]);
+  }, [isOpen, fallbackCategory]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    if (!category || !categories.some((option) => option.id === category)) {
+      setCategory(fallbackCategory);
+    }
+  }, [isOpen, category, categories, fallbackCategory]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,7 +59,7 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
 
     onCreate({
       title: trimmedTitle,
-      category,
+      category: category || fallbackCategory,
       content: normalizedContent
     });
   };
@@ -46,7 +71,7 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
-        className="modal"
+        className="modal modal--compact"
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-task-title"
@@ -74,8 +99,9 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
             <select
               value={category}
               onChange={(event) => setCategory(event.target.value as TaskCategory)}
+              disabled={categories.length === 0}
             >
-              {CATEGORIES.map((option) => (
+              {categories.map((option) => (
                 <option key={option.id} value={option.id}>
                   {option.label}
                 </option>
