@@ -62,34 +62,6 @@ body {
   font-size: 0.875rem;
 }
 
-.column-create {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.5rem;
-}
-
-.column-create input,
-.column-create select {
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.5rem;
-  border: 1px solid #cbd5f5;
-  font-size: 0.95rem;
-}
-
-.create-button {
-  background: #6366f1;
-  border: none;
-  color: #fff;
-  border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.create-button:hover {
-  background: #4f46e5;
-}
-
 .column-content {
   display: flex;
   flex-direction: column;
@@ -180,10 +152,16 @@ body {
 }
 
 .field input,
-.field select {
+.field select,
+.field textarea {
   padding: 0.5rem 0.75rem;
   border-radius: 0.5rem;
   border: 1px solid #cbd5f5;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 140px;
 }
 
 .task-card__editor-actions {
@@ -350,6 +328,104 @@ body {
 
 .archive-item--support {
   border-left: 4px solid #22c55e;
+}
+
+.board-create-fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #6366f1, #22d3ee);
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.2);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.board-create-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.24);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  z-index: 1000;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 1rem;
+  max-width: 520px;
+  width: 100%;
+  padding: 1.5rem;
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.modal-cancel,
+.modal-submit {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-cancel {
+  background: #e2e8f0;
+  color: #1f2933;
+}
+
+.modal-submit {
+  background: #6366f1;
+  color: #fff;
+}
+
+.modal-submit:hover {
+  background: #4f46e5;
 }
 
 .task-card--design {

@@ -1,35 +1,30 @@
 import { useState } from 'react';
 import Column from './Column';
+import TaskModal from './TaskModal';
 import { useTaskBoard, STATUSES } from '../hooks/useTaskBoard';
-import type { TaskCategory, TaskStatus } from '../types';
+import type { TaskCategory } from '../types';
 
 const Board = () => {
   const { activeTasks, archivedTasks, addTask, restoreTask } = useTaskBoard();
-  const [draftTitles, setDraftTitles] = useState<Record<TaskStatus, string>>({
-    'new': '',
-    'in-progress': '',
-    'done': ''
-  });
-  const [draftCategories, setDraftCategories] = useState<Record<TaskStatus, TaskCategory>>({
-    'new': 'development',
-    'in-progress': 'development',
-    'done': 'development'
-  });
+  const [isModalOpen, setModalOpen] = useState(false);
 
-  const handleCreateTask = (status: TaskStatus) => {
-    const title = draftTitles[status].trim();
-    if (!title) {
-      return;
-    }
-
+  const handleCreateTask = ({
+    title,
+    category,
+    content
+  }: {
+    title: string;
+    category: TaskCategory;
+    content: string;
+  }) => {
     addTask({
       title,
-      status,
-      category: draftCategories[status],
-      content: '<p>Нажмите, чтобы отредактировать описание задачи.</p>'
+      status: 'new',
+      category,
+      content
     });
 
-    setDraftTitles((prev) => ({ ...prev, [status]: '' }));
+    setModalOpen(false);
   };
 
   return (
@@ -41,18 +36,22 @@ const Board = () => {
             status={id}
             title={label}
             tasks={activeTasks.filter((task) => task.status === id)}
-            draftTitle={draftTitles[id]}
-            onDraftTitleChange={(value) =>
-              setDraftTitles((prev) => ({ ...prev, [id]: value }))
-            }
-            draftCategory={draftCategories[id]}
-            onDraftCategoryChange={(value) =>
-              setDraftCategories((prev) => ({ ...prev, [id]: value }))
-            }
-            onCreateTask={() => handleCreateTask(id)}
           />
         ))}
       </div>
+      <button
+        type="button"
+        className="board-create-fab"
+        aria-label="Создать задачу"
+        onClick={() => setModalOpen(true)}
+      >
+        +
+      </button>
+      <TaskModal
+        isOpen={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreate={handleCreateTask}
+      />
       <aside className="archive">
         <h2>Архив</h2>
         {archivedTasks.length === 0 ? (

@@ -1,11 +1,22 @@
 import { describe, expect, beforeEach, vi, afterEach, it } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
 
 const getColumn = (name: string) => {
   const heading = screen.getAllByRole('heading', { name })[0];
   return heading.closest('section') as HTMLElement;
+};
+
+const createTask = async (user: ReturnType<typeof userEvent.setup>, title: string) => {
+  await user.click(screen.getByRole('button', { name: 'Создать задачу' }));
+
+  const modal = screen.getByRole('dialog', { name: 'Новая задача' });
+  const titleInput = within(modal).getByLabelText('Название');
+
+  await user.clear(titleInput);
+  await user.type(titleInput, title);
+  await user.click(within(modal).getByRole('button', { name: 'Создать' }));
 };
 
 describe('Доска задач PinTaker', () => {
@@ -17,11 +28,10 @@ describe('Доска задач PinTaker', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    const newColumn = getColumn('Новый');
-    const titleInput = within(newColumn).getByPlaceholderText('Название задачи');
+    await createTask(user, 'Написать документацию');
+    await screen.findByRole('heading', { name: 'Написать документацию' });
 
-    await user.type(titleInput, 'Написать документацию');
-    await user.click(within(newColumn).getByRole('button', { name: 'Добавить' }));
+    const newColumn = getColumn('Новый');
 
     expect(within(newColumn).getByRole('heading', { name: 'Написать документацию' })).toBeVisible();
   });
@@ -30,11 +40,10 @@ describe('Доска задач PinTaker', () => {
     const user = userEvent.setup();
     render(<App />);
 
-    const newColumn = getColumn('Новый');
-    const titleInput = within(newColumn).getByPlaceholderText('Название задачи');
+    await createTask(user, 'Починить сборку');
+    await screen.findByRole('heading', { name: 'Починить сборку' });
 
-    await user.type(titleInput, 'Починить сборку');
-    await user.click(within(newColumn).getByRole('button', { name: 'Добавить' }));
+    const newColumn = getColumn('Новый');
 
     const createdHeading = within(newColumn).getByRole('heading', { name: 'Починить сборку' });
     const card = createdHeading.closest('article') as HTMLElement;
@@ -58,11 +67,9 @@ describe('Доска задач PinTaker', () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     render(<App />);
 
-    const newColumn = getColumn('Новый');
-    const titleInput = within(newColumn).getByPlaceholderText('Название задачи');
+    await createTask(user, 'Проверить отчёт');
 
-    await user.type(titleInput, 'Проверить отчёт');
-    await user.click(within(newColumn).getByRole('button', { name: 'Добавить' }));
+    const newColumn = getColumn('Новый');
 
     const heading = within(newColumn).getByRole('heading', { name: 'Проверить отчёт' });
     const card = heading.closest('article') as HTMLElement;
@@ -81,6 +88,7 @@ describe('Доска задач PinTaker', () => {
   });
 
   afterEach(() => {
+    cleanup();
     vi.useRealTimers();
   });
 });
