@@ -1,11 +1,11 @@
 export type TaskStatus = 'new' | 'in-progress' | 'done';
 
-export type TaskCategory =
-  | 'design'
-  | 'development'
-  | 'research'
-  | 'marketing'
-  | 'support';
+export type TaskCategory = string;
+
+export interface TaskCategoryOption {
+  id: TaskCategory;
+  label: string;
+}
 
 export interface TaskTimer {
   durationMinutes: number;
