@@ -2,7 +2,6 @@ import { useMemo, useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import TimerBar from './TimerBar';
 import TaskEditModal from './TaskEditModal';
-import { CATEGORIES, STATUSES } from '../hooks/useTaskBoard';
 import { TASK_PLACEHOLDER_CONTENT } from '../constants/taskContent';
 import { STATUSES, useTaskBoard } from '../hooks/useTaskBoard';
 import type { Task, TaskStatus, TaskUpdate } from '../types';
