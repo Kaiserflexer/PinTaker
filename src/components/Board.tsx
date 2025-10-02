@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import Column from './Column';
 import TaskModal from './TaskModal';
+import SettingsModal from './SettingsModal';
 import { useTaskBoard, STATUSES } from '../hooks/useTaskBoard';
 import type { TaskCategory } from '../types';
 
 const Board = () => {
   const { activeTasks, archivedTasks, addTask, restoreTask } = useTaskBoard();
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isSettingsOpen, setSettingsOpen] = useState(false);
 
   const handleCreateTask = ({
     title,
@@ -41,6 +43,14 @@ const Board = () => {
       </div>
       <button
         type="button"
+        className="board-settings-fab"
+        aria-label="Открыть параметры"
+        onClick={() => setSettingsOpen(true)}
+      >
+        ⚙
+      </button>
+      <button
+        type="button"
         className="board-create-fab"
         aria-label="Создать задачу"
         onClick={() => setModalOpen(true)}
@@ -52,6 +62,7 @@ const Board = () => {
         onClose={() => setModalOpen(false)}
         onCreate={handleCreateTask}
       />
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
       <aside className="archive">
         <h2>Архив</h2>
         {archivedTasks.length === 0 ? (
