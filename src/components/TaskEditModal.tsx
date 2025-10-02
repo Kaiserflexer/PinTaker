@@ -2,6 +2,7 @@ import { type MouseEvent, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import RichTextEditor from './RichTextEditor';
 import { CATEGORIES, STATUSES } from '../hooks/useTaskBoard';
+import { normalizeTaskContent } from '../utils/richText';
 import type { Task, TaskCategory, TaskStatus, TaskTimer, TaskUpdate } from '../types';
 
 interface TaskEditModalProps {
@@ -81,7 +82,7 @@ const TaskEditModal = ({
     onUpdate(task.id, {
       title,
       category,
-      content,
+      content: normalizeTaskContent(content),
       timer: task.timer ? { ...task.timer, durationMinutes } : undefined
     });
     onClose();
