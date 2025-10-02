@@ -1,7 +1,7 @@
 import { type MouseEvent, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import RichTextEditor from './RichTextEditor';
-import { CATEGORIES, STATUSES } from '../hooks/useTaskBoard';
+import { STATUSES, useTaskBoard } from '../hooks/useTaskBoard';
 import type { Task, TaskCategory, TaskStatus, TaskTimer, TaskUpdate } from '../types';
 
 interface TaskEditModalProps {
@@ -25,6 +25,7 @@ const TaskEditModal = ({
   onArchive,
   container
 }: TaskEditModalProps) => {
+  const { categories } = useTaskBoard();
   const [title, setTitle] = useState(task.title);
   const [category, setCategory] = useState<TaskCategory>(task.category);
   const [content, setContent] = useState(task.content);
@@ -40,6 +41,16 @@ const TaskEditModal = ({
     setContent(task.content);
     setDurationMinutes(task.timer?.durationMinutes ?? 30);
   }, [isOpen, task]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    if (!categories.some((item) => item.id === category)) {
+      setCategory(categories[0]?.id ?? category);
+    }
+  }, [isOpen, categories, category]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -107,7 +118,7 @@ const TaskEditModal = ({
   const modalContent = (
     <div className="modal-overlay" role="presentation" onClick={handleOverlayClick}>
       <div
-        className="modal"
+        className="modal modal--wide"
         role="dialog"
         aria-modal="true"
         aria-labelledby={`task-modal-${task.id}`}
@@ -147,7 +158,7 @@ const TaskEditModal = ({
           <label className="field">
             <span>Категория</span>
             <select value={category} onChange={(event) => setCategory(event.target.value as TaskCategory)}>
-              {CATEGORIES.map((item) => (
+              {categories.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.label}
                 </option>
