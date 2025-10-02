@@ -668,6 +668,29 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  padding: 1.5rem;
+}
+
+.modal-form .rte {
+  width: 100%;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.modal-form .rte-toolbar {
+  gap: 0.25rem;
+}
+
+.modal-form .rte-button {
+  font-size: 0.95rem;
+}
+
+.modal-form .rte-editor {
+  min-height: 160px;
+  padding: 0.5rem;
+  border: 1px solid #cbd5f5;
+  border-radius: 0.5rem;
+  background: #fff;
 }
 
 .modal-actions {

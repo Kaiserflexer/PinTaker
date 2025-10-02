@@ -1,10 +1,13 @@
 import { FormEvent, useEffect, useState } from 'react';
+import RichTextEditor from './RichTextEditor';
 import { CATEGORIES } from '../hooks/useTaskBoard';
+import { DEFAULT_TASK_DESCRIPTION } from '../constants';
+import { normalizeTaskContent } from '../utils/richText';
+
 import { TASK_PLACEHOLDER_CONTENT } from '../constants/taskContent';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useTaskBoard } from '../hooks/useTaskBoard';
-
 import type { TaskCategory } from '../types';
 
 interface TaskModalProps {
@@ -17,9 +20,11 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
   const { categories } = useTaskBoard();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<TaskCategory>('development');
+  const [content, setContent] = useState(DEFAULT_TASK_DESCRIPTION);
   const [content, setContent] = useState(TASK_PLACEHOLDER_CONTENT);
   const [category, setCategory] = useState<TaskCategory>('');
   const [content, setContent] = useState(DEFAULT_CONTENT);
+
 
 
   const fallbackCategory = useMemo(() => categories[0]?.id ?? '', [categories]);
@@ -29,6 +34,7 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
       setTitle('');
 
       setCategory('development');
+      setContent(DEFAULT_TASK_DESCRIPTION);
       setContent(TASK_PLACEHOLDER_CONTENT);
 
       setCategory(fallbackCategory);
@@ -44,6 +50,7 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
 
     if (!category || !categories.some((option) => option.id === category)) {
       setCategory(fallbackCategory);
+
     }
   }, [isOpen, category, categories, fallbackCategory]);
 
@@ -55,7 +62,9 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
       return;
     }
 
+    const normalizedContent = normalizeTaskContent(content);
     const normalizedContent = content.trim() ? content : TASK_PLACEHOLDER_CONTENT;
+
 
     onCreate({
       title: trimmedTitle,
@@ -110,10 +119,10 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
           </label>
           <label className="field">
             <span>Описание</span>
-            <textarea
-              rows={4}
+            <RichTextEditor
               value={content}
-              onChange={(event) => setContent(event.target.value)}
+              onChange={setContent}
+              ariaLabel="Описание новой задачи"
             />
           </label>
           <div className="modal-actions">
