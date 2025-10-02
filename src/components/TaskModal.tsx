@@ -1,12 +1,8 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import RichTextEditor from './RichTextEditor';
-import { CATEGORIES } from '../hooks/useTaskBoard';
-import { DEFAULT_TASK_DESCRIPTION } from '../constants';
 import { normalizeTaskContent } from '../utils/richText';
 
 import { TASK_PLACEHOLDER_CONTENT } from '../constants/taskContent';
-
-import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useTaskBoard } from '../hooks/useTaskBoard';
 import type { TaskCategory } from '../types';
 
@@ -20,26 +16,14 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
   const { categories } = useTaskBoard();
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<TaskCategory>('development');
-  const [content, setContent] = useState(DEFAULT_TASK_DESCRIPTION);
   const [content, setContent] = useState(TASK_PLACEHOLDER_CONTENT);
-  const [category, setCategory] = useState<TaskCategory>('');
-  const [content, setContent] = useState(DEFAULT_CONTENT);
-
-
-
   const fallbackCategory = useMemo(() => categories[0]?.id ?? '', [categories]);
 
   useEffect(() => {
     if (isOpen) {
       setTitle('');
-
-      setCategory('development');
-      setContent(DEFAULT_TASK_DESCRIPTION);
+      setCategory(fallbackCategory || 'development');
       setContent(TASK_PLACEHOLDER_CONTENT);
-
-      setCategory(fallbackCategory);
-      setContent(DEFAULT_CONTENT);
-
     }
   }, [isOpen, fallbackCategory]);
 
@@ -63,9 +47,6 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
     }
 
     const normalizedContent = normalizeTaskContent(content);
-    const normalizedContent = content.trim() ? content : TASK_PLACEHOLDER_CONTENT;
-
-
     onCreate({
       title: trimmedTitle,
       category: category || fallbackCategory,
