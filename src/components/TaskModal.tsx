@@ -1,5 +1,10 @@
+import { FormEvent, useEffect, useState } from 'react';
+import { CATEGORIES } from '../hooks/useTaskBoard';
+import { TASK_PLACEHOLDER_CONTENT } from '../constants/taskContent';
+
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { useTaskBoard } from '../hooks/useTaskBoard';
+
 import type { TaskCategory } from '../types';
 
 interface TaskModalProps {
@@ -8,21 +13,27 @@ interface TaskModalProps {
   onCreate: (input: { title: string; category: TaskCategory; content: string }) => void;
 }
 
-const DEFAULT_CONTENT = '<p>Нажмите, чтобы отредактировать описание задачи.</p>';
-
 const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
   const { categories } = useTaskBoard();
   const [title, setTitle] = useState('');
+  const [category, setCategory] = useState<TaskCategory>('development');
+  const [content, setContent] = useState(TASK_PLACEHOLDER_CONTENT);
   const [category, setCategory] = useState<TaskCategory>('');
   const [content, setContent] = useState(DEFAULT_CONTENT);
+
 
   const fallbackCategory = useMemo(() => categories[0]?.id ?? '', [categories]);
 
   useEffect(() => {
     if (isOpen) {
       setTitle('');
+
+      setCategory('development');
+      setContent(TASK_PLACEHOLDER_CONTENT);
+
       setCategory(fallbackCategory);
       setContent(DEFAULT_CONTENT);
+
     }
   }, [isOpen, fallbackCategory]);
 
@@ -44,7 +55,7 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
       return;
     }
 
-    const normalizedContent = content.trim() ? content : DEFAULT_CONTENT;
+    const normalizedContent = content.trim() ? content : TASK_PLACEHOLDER_CONTENT;
 
     onCreate({
       title: trimmedTitle,

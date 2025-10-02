@@ -1,6 +1,9 @@
 import { useMemo, useRef, useState } from 'react';
+import type { KeyboardEvent } from 'react';
 import TimerBar from './TimerBar';
 import TaskEditModal from './TaskEditModal';
+import { CATEGORIES, STATUSES } from '../hooks/useTaskBoard';
+import { TASK_PLACEHOLDER_CONTENT } from '../constants/taskContent';
 import { STATUSES, useTaskBoard } from '../hooks/useTaskBoard';
 import type { Task, TaskStatus, TaskUpdate } from '../types';
 
@@ -13,7 +16,6 @@ interface TaskCardProps {
 }
 
 const statusOrder: TaskStatus[] = STATUSES.map((status) => status.id);
-
 const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps) => {
   const { categories } = useTaskBoard();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,9 +39,23 @@ const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps
     onArchive(task.id);
   };
 
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handlePlaceholderKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      handleOpenModal();
+    }
+  };
+
+  const isPlaceholder = task.content === TASK_PLACEHOLDER_CONTENT;
+
   const categoryLabel = useMemo(() => {
     return categories.find((item) => item.id === task.category)?.label ?? task.category;
   }, [categories, task.category]);
+
 
   return (
     <article ref={cardRef} className={`task-card task-card--${task.category}`}>
@@ -61,7 +77,7 @@ const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps
               →
             </button>
           )}
-          <button type="button" onClick={() => setIsModalOpen(true)}>
+          <button type="button" onClick={handleOpenModal}>
             Редактировать
           </button>
           <button type="button" className="danger" onClick={handleDelete}>
@@ -72,7 +88,15 @@ const TaskCard = ({ task, onMove, onUpdate, onDelete, onArchive }: TaskCardProps
           </button>
         </div>
       </header>
-      <section className="task-card__content" dangerouslySetInnerHTML={{ __html: task.content }} />
+      <section
+        className={`task-card__content${isPlaceholder ? ' task-card__content--placeholder' : ''}`}
+        dangerouslySetInnerHTML={{ __html: task.content }}
+        onClick={isPlaceholder ? handleOpenModal : undefined}
+        onKeyDown={isPlaceholder ? handlePlaceholderKeyDown : undefined}
+        role={isPlaceholder ? 'button' : undefined}
+        tabIndex={isPlaceholder ? 0 : undefined}
+        aria-label={isPlaceholder ? 'Добавить описание задачи' : undefined}
+      />
       {task.timer && <TimerBar timer={task.timer} />}
       <TaskEditModal
         task={task}
