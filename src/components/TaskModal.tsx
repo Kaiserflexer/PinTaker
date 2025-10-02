@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import RichTextEditor from './RichTextEditor';
 import { normalizeTaskContent } from '../utils/richText';
 
@@ -19,13 +19,20 @@ const TaskModal = ({ isOpen, onClose, onCreate }: TaskModalProps) => {
   const [content, setContent] = useState(TASK_PLACEHOLDER_CONTENT);
   const fallbackCategory = useMemo(() => categories[0]?.id ?? '', [categories]);
 
+  const wasOpenRef = useRef(false);
+
   useEffect(() => {
-    if (isOpen) {
+    const wasOpen = wasOpenRef.current;
+
+    if (!wasOpen && isOpen) {
       setTitle('');
       setCategory(fallbackCategory || 'development');
       setContent(TASK_PLACEHOLDER_CONTENT);
     }
-  }, [isOpen, fallbackCategory]);
+
+    wasOpenRef.current = isOpen;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) {
